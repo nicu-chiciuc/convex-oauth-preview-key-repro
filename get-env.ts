@@ -3,6 +3,9 @@ import { createInterface } from "node:readline/promises";
 import { stdin, stdout } from "node:process";
 
 const convexApi = "https://api.convex.dev";
+
+// These three values come from the Convex OAuth application settings.
+// The redirect URI must exactly match one of the app's configured redirect URIs.
 const clientId = process.env.CONVEX_OAUTH_CLIENT_ID;
 const clientSecret = process.env.CONVEX_OAUTH_CLIENT_SECRET;
 const redirectUri = process.env.CONVEX_OAUTH_REDIRECT_URI;
@@ -13,10 +16,14 @@ if (!clientId || !clientSecret || !redirectUri) {
   );
 }
 
+// Ask Convex for a project-scoped token. This matters because /v1/token_details
+// will then tell us which project the user selected.
 const authorizeUrl = new URL("https://dashboard.convex.dev/oauth/authorize/project");
 authorizeUrl.searchParams.set("client_id", clientId);
 authorizeUrl.searchParams.set("redirect_uri", redirectUri);
 authorizeUrl.searchParams.set("response_type", "code");
+// A real app should verify this on callback. For this one-off script it is just
+// a recognizable marker in the redirected URL.
 authorizeUrl.searchParams.set("state", `convex-oauth-preview-key-repro-${Date.now()}`);
 
 console.log("Open this URL and authorize a Convex project:\n");
@@ -27,6 +34,8 @@ const prompts = createInterface({ input: stdin, output: stdout });
 const pasted = await prompts.question("Paste the redirected URL or code: ");
 prompts.close();
 
+// Convex redirects back with ?code=.... Accepting either the full URL or just
+// the code keeps the manual step simple.
 let code = pasted.trim();
 if (code.startsWith("http://") || code.startsWith("https://")) {
   code = new URL(code).searchParams.get("code") ?? "";
@@ -35,6 +44,8 @@ if (!code) {
   throw new Error("No OAuth code found");
 }
 
+// Exchange the short-lived authorization code for the actual OAuth access token
+// that the repro scripts use as CONVEX_OAUTH_TOKEN.
 const tokenResponse = await fetch(`${convexApi}/oauth/token`, {
   method: "POST",
   headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -53,6 +64,9 @@ if (typeof tokenBody.access_token !== "string") {
 }
 
 const oauthToken = tokenBody.access_token;
+
+// For project-scoped OAuth tokens, token_details returns the Convex project id.
+// If this fails, the selected OAuth flow probably was not /authorize/project.
 const detailsResponse = await fetch(`${convexApi}/v1/token_details`, {
   headers: { Authorization: `Bearer ${oauthToken}` },
 });
@@ -63,6 +77,9 @@ if (typeof detailsBody.projectId !== "number") {
 }
 
 const projectId = String(detailsBody.projectId);
+
+// The prod control script needs a deployment name. Use the project's default
+// production deployment, and pass only the raw name, not "prod:<name>".
 const deploymentResponse = await fetch(
   `${convexApi}/v1/projects/${projectId}/deployment?defaultProd=true`,
   { headers: { Authorization: `Bearer ${oauthToken}` } },
