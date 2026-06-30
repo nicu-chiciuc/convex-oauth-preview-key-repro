@@ -18,23 +18,29 @@ The contrast is:
 - For the preview repro, the Convex project id.
 - For the prod control, the Convex deployment name, without the `prod:` prefix.
 
-## Preview Key Repro
+## Setup
 
-Use `read` so the OAuth token does not get written to shell history:
+Create a local env file:
 
 ```bash
-printf "Convex OAuth token: "
-stty -echo
-read CONVEX_OAUTH_TOKEN
-stty echo
-printf "\nConvex project id: "
-read CONVEX_PROJECT_ID
+cp .env.example .env.local
+```
 
-CONVEX_OAUTH_TOKEN="$CONVEX_OAUTH_TOKEN" \
-CONVEX_PROJECT_ID="$CONVEX_PROJECT_ID" \
-node repro-preview.ts
+Fill in the values:
 
-unset CONVEX_OAUTH_TOKEN CONVEX_PROJECT_ID
+```bash
+CONVEX_OAUTH_TOKEN=...
+CONVEX_PROJECT_ID=...
+CONVEX_DEPLOYMENT_NAME=...
+```
+
+`.env.local` is ignored by git. This avoids putting the OAuth token in shell history, but it does
+store the token on disk locally.
+
+## Preview Key Repro
+
+```bash
+npm run repro:preview
 ```
 
 Expected current result:
@@ -50,18 +56,7 @@ claim_preview_deployment with OAuth token directly: 200 ...
 This checks the matching working path for a normal deployment deploy key created through OAuth.
 
 ```bash
-printf "Convex OAuth token: "
-stty -echo
-read CONVEX_OAUTH_TOKEN
-stty echo
-printf "\nConvex deployment name: "
-read CONVEX_DEPLOYMENT_NAME
-
-CONVEX_OAUTH_TOKEN="$CONVEX_OAUTH_TOKEN" \
-CONVEX_DEPLOYMENT_NAME="$CONVEX_DEPLOYMENT_NAME" \
-node repro-prod-control.ts
-
-unset CONVEX_OAUTH_TOKEN CONVEX_DEPLOYMENT_NAME
+npm run repro:prod-control
 ```
 
 Expected current result:

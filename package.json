@@ -5,8 +5,8 @@
   "type": "module",
   "description": "Minimal repro for OAuth-created Convex preview deploy keys failing claim_preview_deployment.",
   "scripts": {
-    "repro:preview": "node repro-preview.ts",
-    "repro:prod-control": "node repro-prod-control.ts"
+    "repro:preview": "node --env-file-if-exists=.env.local repro-preview.ts",
+    "repro:prod-control": "node --env-file-if-exists=.env.local repro-prod-control.ts"
   },
   "engines": {
     "node": ">=24"
