@@ -34,9 +34,6 @@ CONVEX_PROJECT_ID=...
 CONVEX_DEPLOYMENT_NAME=...
 ```
 
-`.env.local` is ignored by git. This avoids putting the OAuth token in shell history, but it does
-store the token on disk locally.
-
 If these values are already set globally in your environment, omit `--env-file=.env.local` from the
 commands below.
 
