@@ -26,12 +26,18 @@ Create a local env file:
 cp .env.example .env.local
 ```
 
-Fill in the OAuth app values:
+In the Convex OAuth app settings, add this redirect URL:
+
+```text
+http://localhost:32123/callback
+```
+
+Fill in the OAuth app values in `.env.local`:
 
 ```bash
 CONVEX_OAUTH_CLIENT_ID=...
 CONVEX_OAUTH_CLIENT_SECRET=...
-CONVEX_OAUTH_REDIRECT_URI=...
+CONVEX_OAUTH_REDIRECT_URI=http://localhost:32123/callback
 ```
 
 Then get the repro values through the project OAuth flow:
@@ -39,6 +45,9 @@ Then get the repro values through the project OAuth flow:
 ```bash
 node --env-file=.env.local get-env.ts
 ```
+
+Open the printed URL, authorize a project, then copy the redirected URL from the browser address bar
+and paste it back into the script. The localhost page does not need to load.
 
 Paste the printed `CONVEX_OAUTH_TOKEN`, `CONVEX_PROJECT_ID`, and `CONVEX_DEPLOYMENT_NAME` values
 back into `.env.local`.
