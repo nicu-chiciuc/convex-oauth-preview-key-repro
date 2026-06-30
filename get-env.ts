@@ -68,8 +68,8 @@ if (typeof tokenBody.access_token !== "string") {
 
 const oauthToken = tokenBody.access_token;
 
-// For team-scoped OAuth tokens, token_details returns the Convex team id.
-// If this fails, the selected OAuth flow probably was not /authorize/team.
+// Verify that the token is team-scoped. This is the scope Samebase needs when
+// it creates projects for users.
 const detailsResponse = await fetch(`${convexApi}/v1/token_details`, {
   headers: { Authorization: `Bearer ${oauthToken}` },
 });
@@ -79,32 +79,5 @@ if (typeof detailsBody.teamId !== "number") {
   throw new Error("Expected a team-scoped OAuth token with teamId");
 }
 
-const teamId = String(detailsBody.teamId);
-const projectName = `convex-oauth-preview-key-repro-${Date.now()}`;
-
-// Create a fresh project with a production deployment. This mirrors the product
-// flow that needs team access, and it gives the repro scripts both ids they need.
-const projectResponse = await fetch(`${convexApi}/v1/teams/${teamId}/create_project`, {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${oauthToken}`,
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    projectName,
-    deploymentType: "prod",
-  }),
-});
-const projectBody = await projectResponse.json();
-if (
-  typeof projectBody.id !== "number" ||
-  typeof projectBody.deploymentName !== "string"
-) {
-  console.log("create_project:", projectResponse.status, projectBody);
-  throw new Error("Could not create project with prod deployment");
-}
-
 console.log("\nAdd these to .env.local:\n");
 console.log(`CONVEX_OAUTH_TOKEN=${oauthToken}`);
-console.log(`CONVEX_PROJECT_ID=${projectBody.id}`);
-console.log(`CONVEX_DEPLOYMENT_NAME=${projectBody.deploymentName}`);

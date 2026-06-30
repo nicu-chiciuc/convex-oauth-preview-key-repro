@@ -48,7 +48,7 @@ CONVEX_OAUTH_CLIENT_SECRET=...
 CONVEX_OAUTH_REDIRECT_URI=http://localhost:32123/callback
 ```
 
-Then get the repro values through the team OAuth flow:
+Then get an OAuth token through the team OAuth flow:
 
 ```bash
 node --env-file=.env.local get-env.ts
@@ -57,9 +57,24 @@ node --env-file=.env.local get-env.ts
 Open the printed URL, authorize a team, then copy the redirected URL from the browser address bar
 and paste it back into the script. The localhost page does not need to load.
 
-The script creates a fresh Convex project with a prod deployment. Paste the printed
-`CONVEX_OAUTH_TOKEN`, `CONVEX_PROJECT_ID`, and `CONVEX_DEPLOYMENT_NAME` values back into
-`.env.local`.
+Paste the printed `CONVEX_OAUTH_TOKEN` value back into `.env.local`.
+
+To reuse an existing project, fill in these values yourself:
+
+```bash
+CONVEX_PROJECT_ID=...
+CONVEX_DEPLOYMENT_NAME=...
+```
+
+`CONVEX_DEPLOYMENT_NAME` is the raw deployment name, without the `prod:` prefix.
+
+To create a fresh disposable project instead, run:
+
+```bash
+node --env-file=.env.local create-project.ts
+```
+
+Paste the printed `CONVEX_PROJECT_ID` and `CONVEX_DEPLOYMENT_NAME` values back into `.env.local`.
 
 If these values are already set globally in your environment, omit `--env-file=.env.local` from the
 commands below.
@@ -96,5 +111,5 @@ deployment/team_and_project_for_key with returned deploy key: 200 ...
 
 ## Notes
 
-They do create deploy keys and, for the preview repro, may create or reuse a preview deployment. Use
-a disposable Convex project if you want to avoid leaving diagnostic resources behind.
+Only `create-project.ts` creates a Convex project. The repro scripts create deploy keys and, for the
+preview repro, may create or reuse a preview deployment.
