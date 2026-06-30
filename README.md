@@ -26,13 +26,22 @@ Create a local env file:
 cp .env.example .env.local
 ```
 
-Fill in the values:
+Fill in the OAuth app values:
 
 ```bash
-CONVEX_OAUTH_TOKEN=...
-CONVEX_PROJECT_ID=...
-CONVEX_DEPLOYMENT_NAME=...
+CONVEX_OAUTH_CLIENT_ID=...
+CONVEX_OAUTH_CLIENT_SECRET=...
+CONVEX_OAUTH_REDIRECT_URI=...
 ```
+
+Then get the repro values through the project OAuth flow:
+
+```bash
+node --env-file=.env.local get-env.ts
+```
+
+Paste the printed `CONVEX_OAUTH_TOKEN`, `CONVEX_PROJECT_ID`, and `CONVEX_DEPLOYMENT_NAME` values
+back into `.env.local`.
 
 If these values are already set globally in your environment, omit `--env-file=.env.local` from the
 commands below.
