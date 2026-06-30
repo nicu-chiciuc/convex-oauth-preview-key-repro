@@ -76,5 +76,5 @@ const oauthClaimResponse = await fetch(`${convexApi}/api/claim_preview_deploymen
 console.log(
   "claim_preview_deployment with OAuth token directly:",
   oauthClaimResponse.status,
-  await oauthClaimResponse.text(),
+  (await oauthClaimResponse.text()).replace(/"adminKey":"[^"]+"/, '"adminKey":"[redacted]"'),
 );
