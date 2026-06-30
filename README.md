@@ -23,9 +23,12 @@ The contrast is:
 Use `read` so the OAuth token does not get written to shell history:
 
 ```bash
-read -rsp "Convex OAuth token: " CONVEX_OAUTH_TOKEN
-echo
-read -rp "Convex project id: " CONVEX_PROJECT_ID
+printf "Convex OAuth token: "
+stty -echo
+read CONVEX_OAUTH_TOKEN
+stty echo
+printf "\nConvex project id: "
+read CONVEX_PROJECT_ID
 
 CONVEX_OAUTH_TOKEN="$CONVEX_OAUTH_TOKEN" \
 CONVEX_PROJECT_ID="$CONVEX_PROJECT_ID" \
@@ -47,9 +50,12 @@ claim_preview_deployment with OAuth token directly: 200 ...
 This checks the matching working path for a normal deployment deploy key created through OAuth.
 
 ```bash
-read -rsp "Convex OAuth token: " CONVEX_OAUTH_TOKEN
-echo
-read -rp "Convex deployment name: " CONVEX_DEPLOYMENT_NAME
+printf "Convex OAuth token: "
+stty -echo
+read CONVEX_OAUTH_TOKEN
+stty echo
+printf "\nConvex deployment name: "
+read CONVEX_DEPLOYMENT_NAME
 
 CONVEX_OAUTH_TOKEN="$CONVEX_OAUTH_TOKEN" \
 CONVEX_DEPLOYMENT_NAME="$CONVEX_DEPLOYMENT_NAME" \
