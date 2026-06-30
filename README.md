@@ -14,9 +14,8 @@ The contrast is:
 ## Requirements
 
 - Node.js 24 or newer.
-- A Convex OAuth token with access to the target project/deployment.
-- For the preview repro, the Convex project id.
-- For the prod control, the Convex deployment name, without the `prod:` prefix.
+- A Convex OAuth app client id and secret.
+- A Convex team you can authorize for that OAuth app.
 
 ## Setup
 
@@ -49,17 +48,18 @@ CONVEX_OAUTH_CLIENT_SECRET=...
 CONVEX_OAUTH_REDIRECT_URI=http://localhost:32123/callback
 ```
 
-Then get the repro values through the project OAuth flow:
+Then get the repro values through the team OAuth flow:
 
 ```bash
 node --env-file=.env.local get-env.ts
 ```
 
-Open the printed URL, authorize a project, then copy the redirected URL from the browser address bar
+Open the printed URL, authorize a team, then copy the redirected URL from the browser address bar
 and paste it back into the script. The localhost page does not need to load.
 
-Paste the printed `CONVEX_OAUTH_TOKEN`, `CONVEX_PROJECT_ID`, and `CONVEX_DEPLOYMENT_NAME` values
-back into `.env.local`.
+The script creates a fresh Convex project with a prod deployment. Paste the printed
+`CONVEX_OAUTH_TOKEN`, `CONVEX_PROJECT_ID`, and `CONVEX_DEPLOYMENT_NAME` values back into
+`.env.local`.
 
 If these values are already set globally in your environment, omit `--env-file=.env.local` from the
 commands below.

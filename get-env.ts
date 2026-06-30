@@ -16,9 +16,9 @@ if (!clientId || !clientSecret || !redirectUri) {
   );
 }
 
-// Ask Convex for a project-scoped token. This matters because /v1/token_details
-// will then tell us which project the user selected.
-const authorizeUrl = new URL("https://dashboard.convex.dev/oauth/authorize/project");
+// Ask Convex for a team-scoped token. This matches apps that create projects
+// for users instead of only managing one already-selected project.
+const authorizeUrl = new URL("https://dashboard.convex.dev/oauth/authorize/team");
 authorizeUrl.searchParams.set("client_id", clientId);
 authorizeUrl.searchParams.set("redirect_uri", redirectUri);
 authorizeUrl.searchParams.set("response_type", "code");
@@ -29,7 +29,7 @@ authorizeUrl.searchParams.set("state", `convex-oauth-preview-key-repro-${Date.no
 console.log("Make sure this redirect URI is registered on the OAuth app with this client id:");
 console.log(`client_id: ${clientId}`);
 console.log(`redirect_uri: ${redirectUri}\n`);
-console.log("Open this URL and authorize a Convex project:\n");
+console.log("Open this URL and authorize a Convex team:\n");
 console.log(authorizeUrl.href);
 console.log();
 
@@ -68,32 +68,43 @@ if (typeof tokenBody.access_token !== "string") {
 
 const oauthToken = tokenBody.access_token;
 
-// For project-scoped OAuth tokens, token_details returns the Convex project id.
-// If this fails, the selected OAuth flow probably was not /authorize/project.
+// For team-scoped OAuth tokens, token_details returns the Convex team id.
+// If this fails, the selected OAuth flow probably was not /authorize/team.
 const detailsResponse = await fetch(`${convexApi}/v1/token_details`, {
   headers: { Authorization: `Bearer ${oauthToken}` },
 });
 const detailsBody = await detailsResponse.json();
-if (typeof detailsBody.projectId !== "number") {
+if (typeof detailsBody.teamId !== "number") {
   console.log("token_details:", detailsResponse.status, detailsBody);
-  throw new Error("Expected a project-scoped OAuth token with projectId");
+  throw new Error("Expected a team-scoped OAuth token with teamId");
 }
 
-const projectId = String(detailsBody.projectId);
+const teamId = String(detailsBody.teamId);
+const projectName = `convex-oauth-preview-key-repro-${Date.now()}`;
 
-// The prod control script needs a deployment name. Use the project's default
-// production deployment, and pass only the raw name, not "prod:<name>".
-const deploymentResponse = await fetch(
-  `${convexApi}/v1/projects/${projectId}/deployment?defaultProd=true`,
-  { headers: { Authorization: `Bearer ${oauthToken}` } },
-);
-const deploymentBody = await deploymentResponse.json();
-if (typeof deploymentBody.name !== "string") {
-  console.log("default prod deployment:", deploymentResponse.status, deploymentBody);
-  throw new Error("Could not find default prod deployment name");
+// Create a fresh project with a production deployment. This mirrors the product
+// flow that needs team access, and it gives the repro scripts both ids they need.
+const projectResponse = await fetch(`${convexApi}/v1/teams/${teamId}/create_project`, {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${oauthToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    projectName,
+    deploymentType: "prod",
+  }),
+});
+const projectBody = await projectResponse.json();
+if (
+  typeof projectBody.id !== "number" ||
+  typeof projectBody.deploymentName !== "string"
+) {
+  console.log("create_project:", projectResponse.status, projectBody);
+  throw new Error("Could not create project with prod deployment");
 }
 
 console.log("\nAdd these to .env.local:\n");
 console.log(`CONVEX_OAUTH_TOKEN=${oauthToken}`);
-console.log(`CONVEX_PROJECT_ID=${projectId}`);
-console.log(`CONVEX_DEPLOYMENT_NAME=${deploymentBody.name}`);
+console.log(`CONVEX_PROJECT_ID=${projectBody.id}`);
+console.log(`CONVEX_DEPLOYMENT_NAME=${projectBody.deploymentName}`);
