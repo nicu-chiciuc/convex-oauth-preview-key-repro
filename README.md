@@ -92,7 +92,7 @@ Expected current result:
 ```text
 create_preview_deploy_key: 200 { previewDeployKey: 'preview:team:project|[redacted]' }
 claim_preview_deployment with returned preview key: 401 {"code":"AuthenticationFailed","message":"Invalid Convex preview deploy key"}
-claim_preview_deployment with OAuth token directly: 200 {"instanceUrl":"...","adminKey":"[redacted]",...}
+claim_preview_deployment with OAuth token directly: 200 {"instanceUrl":"...","adminKey":"team:team-slug|[redacted]",...}
 ```
 
 ## Prod Deploy Key Control
