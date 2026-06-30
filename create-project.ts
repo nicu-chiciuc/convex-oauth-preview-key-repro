@@ -8,6 +8,14 @@ if (!oauthToken) {
   throw new Error("Set CONVEX_OAUTH_TOKEN");
 }
 
+const projectName = process.argv[2];
+
+if (!projectName) {
+  throw new Error(
+    "Pass a project name, e.g. node --env-file=.env.local create-project.ts tmp-convex-oauth-preview-key-repro",
+  );
+}
+
 // Find the team attached to this OAuth token. The setup script uses the team
 // OAuth flow, so token_details should return a teamId.
 const detailsResponse = await fetch(`${convexApi}/v1/token_details`, {
@@ -19,11 +27,8 @@ if (typeof detailsBody.teamId !== "number") {
   throw new Error("Expected a team-scoped OAuth token with teamId");
 }
 
-const projectName = process.argv[2] ?? `convex-oauth-preview-key-repro-${Date.now()}`;
-
-// Create a disposable project with a production deployment. Skip this script if
-// you want to reuse an existing project and already know its project id and
-// deployment name.
+// Create a disposable project with a production deployment. Use a tmp- name so
+// it is easy to identify later.
 const projectResponse = await fetch(
   `${convexApi}/v1/teams/${detailsBody.teamId}/create_project`,
   {
