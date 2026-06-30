@@ -37,10 +37,13 @@ CONVEX_DEPLOYMENT_NAME=...
 `.env.local` is ignored by git. This avoids putting the OAuth token in shell history, but it does
 store the token on disk locally.
 
+If these values are already set globally in your environment, omit `--env-file=.env.local` from the
+commands below.
+
 ## Preview Key Repro
 
 ```bash
-npm run repro:preview
+node --env-file=.env.local repro-preview.ts
 ```
 
 Expected current result:
@@ -56,7 +59,7 @@ claim_preview_deployment with OAuth token directly: 200 ...
 This checks the matching working path for a normal deployment deploy key created through OAuth.
 
 ```bash
-npm run repro:prod-control
+node --env-file=.env.local repro-prod-control.ts
 ```
 
 Expected current result:
