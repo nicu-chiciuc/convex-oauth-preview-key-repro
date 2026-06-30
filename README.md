@@ -78,7 +78,5 @@ deployment/team_and_project_for_key with returned deploy key: 200 ...
 
 ## Notes
 
-The scripts print only deploy key prefixes and redact the secret portion after `|`.
-
 They do create deploy keys and, for the preview repro, may create or reuse a preview deployment. Use
 a disposable Convex project if you want to avoid leaving diagnostic resources behind.
