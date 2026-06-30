@@ -19,7 +19,7 @@ if (typeof detailsBody.teamId !== "number") {
   throw new Error("Expected a team-scoped OAuth token with teamId");
 }
 
-const projectName = `convex-oauth-preview-key-repro-${Date.now()}`;
+const projectName = process.argv[2] ?? `convex-oauth-preview-key-repro-${Date.now()}`;
 
 // Create a disposable project with a production deployment. Skip this script if
 // you want to reuse an existing project and already know its project id and

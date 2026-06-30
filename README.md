@@ -71,7 +71,7 @@ CONVEX_DEPLOYMENT_NAME=...
 To create a fresh disposable project instead, run:
 
 ```bash
-node --env-file=.env.local create-project.ts
+node --env-file=.env.local create-project.ts convex-oauth-preview-key-repro
 ```
 
 Paste the printed `CONVEX_PROJECT_ID` and `CONVEX_DEPLOYMENT_NAME` values back into `.env.local`.
