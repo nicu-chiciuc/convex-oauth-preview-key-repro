@@ -26,6 +26,9 @@ authorizeUrl.searchParams.set("response_type", "code");
 // a recognizable marker in the redirected URL.
 authorizeUrl.searchParams.set("state", `convex-oauth-preview-key-repro-${Date.now()}`);
 
+console.log("Make sure this redirect URI is registered on the OAuth app with this client id:");
+console.log(`client_id: ${clientId}`);
+console.log(`redirect_uri: ${redirectUri}\n`);
 console.log("Open this URL and authorize a Convex project:\n");
 console.log(authorizeUrl.href);
 console.log();

@@ -32,6 +32,15 @@ In the Convex OAuth app settings, add this redirect URL:
 http://localhost:32123/callback
 ```
 
+Add it to the same OAuth app whose client id you put in `CONVEX_OAUTH_CLIENT_ID`.
+The dashboard edit field accepts multiple redirect URIs as a comma-separated list:
+
+```text
+https://your-existing-callback, http://localhost:32123/callback
+```
+
+After saving, the dashboard should show `http://localhost:32123/callback` as its own bullet.
+
 Fill in the OAuth app values in `.env.local`:
 
 ```bash
