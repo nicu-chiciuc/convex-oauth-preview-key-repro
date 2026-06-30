@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+export {};
 
 const convexApi = "https://api.convex.dev";
 const oauthToken = process.env.CONVEX_OAUTH_TOKEN?.replace(/^Bearer\s+/, "");
