@@ -6,5 +6,8 @@
   "description": "Minimal repro for OAuth-created Convex preview deploy keys failing claim_preview_deployment.",
   "engines": {
     "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.2"
   }
 }
